@@ -1,11 +1,10 @@
 package controller
 
 import (
-	"binance-dashboard/app"
-	"binance-dashboard/app/application"
-	"binance-dashboard/app/dto"
-	"binance-dashboard/app/service"
-	"fmt"
+	"binance-order-book/app"
+	"binance-order-book/app/application"
+	"binance-order-book/app/dto"
+	"binance-order-book/app/service"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -40,9 +39,6 @@ func (h *Html) getHtml(c *gin.Context) {
 		return
 	}
 
-	fmt.Println("\n\033[32m--- Debug ----")
-	fmt.Printf("\033[36mdata = %+v\n", data)
-	fmt.Println("\033[32m\n---------------\033[0m")
 	depthDto := dto.GetBinanceDepthDto{
 		Symbol: data.Symbol,
 	}

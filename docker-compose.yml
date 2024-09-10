@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  binance-order-book:
+    container_name: binance-order-book
+    build:
+      context: .
+      dockerfile: docker/golang/Dockerfile
+    ports:
+      - '7034:7034'
+    restart: unless-stopped
+    environment:
+      - GO_ENV=production
+      - GIN_MODE=release
+
+    networks:
+      - binance-order-book
+
+
+networks:
+  binance-order-book:
+    driver: bridge

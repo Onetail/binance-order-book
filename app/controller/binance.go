@@ -1,10 +1,10 @@
 package controller
 
 import (
-	"binance-dashboard/app"
-	"binance-dashboard/app/application"
-	"binance-dashboard/app/dto"
-	"binance-dashboard/app/service"
+	"binance-order-book/app"
+	"binance-order-book/app/application"
+	"binance-order-book/app/dto"
+	"binance-order-book/app/service"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

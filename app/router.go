@@ -1,7 +1,7 @@
 package app
 
 import (
-	"binance-dashboard/app/utils"
+	"binance-order-book/app/utils"
 	"log"
 	"strconv"
 

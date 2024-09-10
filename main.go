@@ -1,8 +1,8 @@
 package main
 
 import (
-	"binance-dashboard/app"
-	"binance-dashboard/app/controller"
+	"binance-order-book/app"
+	"binance-order-book/app/controller"
 )
 
 func main() {

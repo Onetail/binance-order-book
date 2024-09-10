@@ -1,8 +1,8 @@
 package service
 
 import (
-	"binance-dashboard/app/dto"
-	"binance-dashboard/app/utils"
+	"binance-order-book/app/dto"
+	"binance-order-book/app/utils"
 	"fmt"
 	"net/url"
 )

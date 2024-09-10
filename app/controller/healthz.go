@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"binance-dashboard/app"
+	"binance-order-book/app"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
