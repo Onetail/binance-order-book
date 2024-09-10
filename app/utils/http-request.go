@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 
@@ -33,9 +32,6 @@ func decodeResponseBody[T any](resp *http.Response) (*T, error) {
 		return nil, err
 	}
 
-	fmt.Println("\n\033[32m--- Debug ----")
-	fmt.Printf("\033[36mapiResponse = %+v\n", apiResponse)
-	fmt.Println("\033[32m\n---------------\033[0m")
 	jsonString, _ := json.Marshal(apiResponse)
 	var st T
 	json.Unmarshal(jsonString, &st)

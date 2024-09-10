@@ -2,8 +2,9 @@ package controller
 
 import (
 	"binance-dashboard/app"
+	"binance-dashboard/app/application"
+	"binance-dashboard/app/dto"
 	"binance-dashboard/app/service"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -27,16 +28,40 @@ func (b *Binance) Init(server *app.HTTPServer) {
 	b.router = server.GetEngine().Group("/api/v1/binance")
 
 	b.router.GET("depth", b.getDepth)
+	b.router.GET("ticker/bookTicker", b.getBookTicker)
 
 }
 
 func (b *Binance) getDepth(c *gin.Context) {
+	var data dto.GetBinanceDepthDto
 
-	result, err := b.binanceService.GetDepth()
+	err := c.ShouldBindQuery(&data)
 	if err != nil {
-		fmt.Println("\n\033[31m--- Debug ----")
-		fmt.Printf("\033[35merr = %+v\n", err)
-		fmt.Println("\033[31m\n---------------\033[0m")
+		application.HandleError(c, application.NewError(http.StatusBadRequest, err.Error()))
+		return
+	}
+
+	result, getErr := b.binanceService.GetDepth(data)
+	if getErr != nil {
+		application.HandleError(c, application.NewError(http.StatusForbidden, getErr.Error()))
+		return
+	}
+	c.JSON(http.StatusOK, result)
+}
+
+func (b *Binance) getBookTicker(c *gin.Context) {
+	var data dto.GetBinanceBookTickerDto
+
+	err := c.ShouldBindQuery(&data)
+	if err != nil {
+		application.HandleError(c, application.NewError(http.StatusBadRequest, err.Error()))
+		return
+	}
+
+	result, getErr := b.binanceService.GetBookTicker(data)
+	if getErr != nil {
+		application.HandleError(c, application.NewError(http.StatusForbidden, getErr.Error()))
+		return
 	}
 	c.JSON(http.StatusOK, result)
 }

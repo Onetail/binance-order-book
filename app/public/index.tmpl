@@ -1,5 +1,85 @@
 <html>
+	<style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 45%;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .buy {
+            background-color: #e0ffe0;
+        }
+
+        .sell {
+            background-color: #ffe0e0;
+        }
+
+        caption {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+    </style>
 	<h1>
 		{{ .title }}
 	</h1>
+	<div class="container">
+	<table>
+            <caption>買入價格</caption>
+            <thead>
+                <tr>
+                    <th>數量</th>
+                    <th>價格</th>
+                </tr>
+            </thead>
+            <tbody>
+				{{ range .bids }}
+                <tr class="buy">
+                    <td>{{index . 1}}</td>
+                    <td>{{index . 0}}</td>
+                </tr>
+				{{ end }}
+            </tbody>
+        </table>
+		<table>
+			<caption>賣出價格</caption>
+            <thead>
+                <tr>
+                    <th>價格</th>
+					<th>數量</th>
+                </tr>
+            </thead>
+            <tbody>
+				{{ range .asks }}
+                <tr class="sell">
+                    <td>{{index . 0}}</td>
+                    <td>{{index . 1}}</td>
+                </tr>
+				{{ end }}
+            </tbody>
+		
+		</table> 
+	</div>
+	<div>
+		{{ range .bookStickerData }}
+		{{ end }}
+	</div>
 </html>
