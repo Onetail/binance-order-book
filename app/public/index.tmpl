@@ -1,4 +1,5 @@
 <html>
+	<head>
 	<style>
         body {
             font-family: Arial, sans-serif;
@@ -38,6 +39,8 @@
             margin-bottom: 10px;
         }
     </style>
+	</head>
+	<body>
 	<h1>
 		{{ .title }}
 	</h1>
@@ -50,7 +53,7 @@
                     <th>價格</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="bidsList">
 				{{ range .bids }}
                 <tr class="buy">
                     <td>{{index . 1}}</td>
@@ -67,7 +70,7 @@
 					<th>數量</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="asksList">
 				{{ range .asks }}
                 <tr class="sell">
                     <td>{{index . 0}}</td>
@@ -82,4 +85,72 @@
 		{{ range .bookStickerData }}
 		{{ end }}
 	</div>
+
+	<script>
+            // 创建 WebSocket 连接
+            var ws = new WebSocket("/ws/v1/binance/depth?symbol=ethbtc");
+
+            // 处理 WebSocket 打开事件
+            ws.onopen = function() {
+                console.log("WebSocket connection opened.");
+            };
+
+            // 处理 WebSocket 消息事件
+            ws.onmessage = function(event) {
+                // 解析接收到的数据
+                var data = JSON.parse(event.data);
+                updateBids(data.bids);
+                updateAsks(data.asks);
+            };
+
+            // 处理 WebSocket 关闭事件
+            ws.onclose = function() {
+                console.log("WebSocket connection closed.");
+            };
+
+            // 更新 bids 列表
+            function updateBids(bids) {
+                var bidsList = document.getElementById("bidsList");
+                bidsList.innerHTML = "";  // 清空当前列表
+
+                // 循环添加新的 bids 数据
+                bids.forEach(function(bid) {
+                    var row = document.createElement("tr");
+                    row.classList.add("buy");
+                    
+                    var quantityCell = document.createElement("td");
+                    quantityCell.textContent = bid[1];
+                    row.appendChild(quantityCell);
+
+                    var priceCell = document.createElement("td");
+                    priceCell.textContent = bid[0];
+                    row.appendChild(priceCell);
+
+                    bidsList.appendChild(row);
+                });
+            }
+
+            // 更新 asks 列表
+            function updateAsks(asks) {
+                var asksList = document.getElementById("asksList");
+                asksList.innerHTML = "";  // 清空当前列表
+
+                // 循环添加新的 asks 数据
+                asks.forEach(function(ask) {
+                    var row = document.createElement("tr");
+                    row.classList.add("sell");
+                    
+                    var priceCell = document.createElement("td");
+                    priceCell.textContent = ask[0];
+                    row.appendChild(priceCell);
+
+                    var quantityCell = document.createElement("td");
+                    quantityCell.textContent = ask[1];
+                    row.appendChild(quantityCell);
+
+                    asksList.appendChild(row);
+                });
+            }
+        </script>
+	</body>
 </html>

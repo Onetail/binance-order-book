@@ -53,6 +53,7 @@ func (h *Html) getHtml(c *gin.Context) {
 	}
 	bookTickerData, err := h.binanceServer.GetBookTicker(bookTickerDto)
 	if err != nil {
+
 		application.HandleError(c, application.NewError(http.StatusForbidden, err.Error()))
 		return
 	}

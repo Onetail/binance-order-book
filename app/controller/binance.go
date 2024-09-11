@@ -5,6 +5,7 @@ import (
 	"binance-order-book/app/application"
 	"binance-order-book/app/dto"
 	"binance-order-book/app/service"
+	"binance-order-book/app/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -29,6 +30,9 @@ func (b *Binance) Init(server *app.HTTPServer) {
 
 	b.router.GET("depth", b.getDepth)
 	b.router.GET("ticker/bookTicker", b.getBookTicker)
+
+	b.router = server.GetEngine().Group("/ws/v1/binance")
+	b.router.GET("depth", b.wsBinance)
 
 }
 
@@ -64,4 +68,16 @@ func (b *Binance) getBookTicker(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, result)
+}
+
+func (b *Binance) wsBinance(c *gin.Context) {
+
+	var data dto.WsBinanceDepthDto
+	err := c.ShouldBindQuery(&data)
+	if err != nil {
+		application.HandleError(c, application.NewError(http.StatusBadRequest, err.Error()))
+		return
+	}
+
+	utils.WsManager.RegisterClient(c, data)
 }
