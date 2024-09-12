@@ -1,0 +1,35 @@
+name: Auto Deploy
+on:
+  push:
+    branches:
+      - dev
+
+  pull_request:
+    branches:
+      - dev
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env: 
+      GIT_USER: onetail
+      GIT_EMAIL: paosong91@gmail.com
+      SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+      SSH_NAME: server
+      SSH_USER: root
+      SSH_ORIGIN: 172.104.66.109
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: master
+          fetch-depth: 0
+      - name: GIT PUSH DEPLOY
+        if: github.event_name == 'push'
+        uses: ZzzTechCorp/github-ssh-action@v2.0.0
+        with:
+          USER: ${{ env.SSH_USER }}
+          NAME: ${{ env.SSH_NAME }}
+          ORIGIN: ${{ env.SSH_ORIGIN }}
+          SSHKEY: ${{ env.SSH_KEY }}
+      - run: |
+          git remote add $SSH_NAME ssh://$SSH_NAME/root/projects/binance-order-book/server.git
+          git push $SSH_NAME master
