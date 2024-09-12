@@ -1,5 +1,5 @@
 
-FROM golang:1.21-alpine
+FROM golang:1.22-alpine
 
 RUN apk update && apk upgrade && apk add --update alpine-sdk && \
     apk add --no-cache bash git openssh make cmake 
