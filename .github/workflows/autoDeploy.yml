@@ -2,11 +2,11 @@ name: Auto Deploy
 on:
   push:
     branches:
-      - dev
+      - master
 
   pull_request:
     branches:
-      - dev
+      - master
 jobs:
   build:
     runs-on: ubuntu-latest
