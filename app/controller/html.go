@@ -5,9 +5,11 @@ import (
 	"binance-order-book/app/application"
 	"binance-order-book/app/dto"
 	"binance-order-book/app/service"
+	"binance-order-book/app/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/shopspring/decimal"
 )
 
 type Html struct {
@@ -16,6 +18,9 @@ type Html struct {
 	router *gin.RouterGroup
 
 	binanceServer service.Binance
+
+	bidMaxLimit decimal.Decimal
+	askMaxLimit decimal.Decimal
 }
 
 func (h *Html) Init(server *app.HTTPServer) {
@@ -25,6 +30,9 @@ func (h *Html) Init(server *app.HTTPServer) {
 
 	h.binanceServer = service.Binance{}
 	h.binanceServer.Init()
+
+	h.askMaxLimit = decimal.NewFromInt(150)
+	h.bidMaxLimit = decimal.NewFromInt(5)
 
 	h.router = server.GetEngine().Group("")
 	h.router.GET("", h.getHtml)
@@ -47,6 +55,8 @@ func (h *Html) getHtml(c *gin.Context) {
 		application.HandleError(c, application.NewError(http.StatusForbidden, err.Error()))
 		return
 	}
+	depthData.Bids = utils.SizeLimit(depthData.Bids, h.bidMaxLimit)
+	depthData.Asks = utils.SizeLimit(depthData.Asks, h.askMaxLimit)
 
 	bookTickerDto := dto.GetBinanceBookTickerDto{
 		Symbol: data.Symbol,

@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 
 	"github.com/gorilla/websocket"
+	"github.com/shopspring/decimal"
 	"github.com/sirupsen/logrus"
 )
 
@@ -15,12 +16,17 @@ type Binance struct {
 	app            *app.App
 	binanceService service.Binance
 	symbolList     []string
+	bidMaxLimit    decimal.Decimal
+	askMaxLimit    decimal.Decimal
 }
 
 func (b *Binance) Init() {
 	b.binanceService = service.Binance{}
 	b.binanceService.Init()
-	b.symbolList = []string{"ethbtc"}
+	b.symbolList = []string{"solbtc", "ethbtc"}
+
+	b.bidMaxLimit = decimal.NewFromInt(5)
+	b.askMaxLimit = decimal.NewFromInt(150)
 
 }
 
@@ -40,12 +46,15 @@ func (b *Binance) WsDepth() {
 		}
 	}()
 
+	// only run once, ethbtc
 	for _, i := range b.symbolList {
 		symbol := i
 		wsSymbolData := dto.WsBinanceDepthDto{
 			Symbol: symbol,
 		}
-		b.binanceService.WsDepth(wsSymbolData, func(ws *websocket.Conn, event dto.GetBinanceDepthRO) {
+		go b.binanceService.WsDepth(wsSymbolData, func(ws *websocket.Conn, event dto.GetBinanceDepthRO) {
+			event.Bids = utils.SizeLimit(event.Bids, b.bidMaxLimit)
+			event.Asks = utils.SizeLimit(event.Asks, b.askMaxLimit)
 
 			b.emitWsEvent(symbol, event)
 		})

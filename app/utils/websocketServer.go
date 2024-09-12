@@ -92,9 +92,14 @@ func (manager *clientManager) Start() {
 	for {
 		select {
 		case client := <-manager.register:
-			manager.clientGroup.Store(client.Symbol, client)
+			clientG, _ := manager.clientGroup.LoadOrStore(client.Symbol, &sync.Map{})
+			clientGroup := clientG.(*sync.Map)
+			clientGroup.Store(client.ID, client)
 
 		case client := <-manager.unRegister:
+			clientG, _ := manager.clientGroup.LoadOrStore(client.Symbol, &sync.Map{})
+			clientGroup := clientG.(*sync.Map)
+			clientGroup.LoadAndDelete(client.ID)
 			close(client.Send)
 
 		case data := <-manager.broadcast:
@@ -102,8 +107,15 @@ func (manager *clientManager) Start() {
 			if !ok {
 				continue
 			}
+			vv, _ := v.(*sync.Map)
+			vv.Range(func(key, value any) bool {
+				if value.(*wsClient) != nil {
+					value.(*wsClient).Send <- data.Data
+				}
 
-			v.(*wsClient).Send <- data.Data
+				return true
+			})
+
 		}
 	}
 }
